@@ -1,0 +1,22 @@
+# Secrets
+*.key
+*.pem
+*.env
+secrets.yaml
+inventory/secrets.yaml
+
+# Artifacts / logs
+demo/artifacts/
+*.log
+
+# Python
+__pycache__/
+.venv/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+
+# VS Code workspace files
+*.code-workspace
