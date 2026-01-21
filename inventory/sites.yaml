@@ -1,0 +1,4 @@
+sites:
+  - name: home_office
+    notes: "Direct Ethernet laptop <-> Jetson; Wi-Fi for others"
+    vpn_required: true

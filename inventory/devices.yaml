@@ -1,0 +1,50 @@
+devices:
+  - name: bob-controller
+    type: laptop
+    os: windows
+    role: controller
+    vpn_ip: x
+
+  - name: calvin-controller
+    type: laptop
+    os: windows
+    role: controller
+    vpn_ip: x    
+
+  - name: bbb-01
+    type: beaglebone_black
+    os: debian
+    role: node_a
+    vpn_ip: x
+    ssh_user: demo
+        subdevices:
+      - name: bcf-01
+        type: beagleconnect_freedom
+        role: rf_link
+        link: ieee802154
+
+  - name: bbb-02
+    type: beaglebone_black
+    os: debian
+    role: node_b
+    vpn_ip: x
+    ssh_user: demo
+        subdevices:
+      - name: bcf-02
+        type: beagleconnect_freedom
+        role: rf_link
+        link: ieee802154
+
+  - name: jetson
+    type: jetson_orin_nano
+    os: ubuntu
+    role: verifier
+    vpn_ip: x
+    ssh_user: demo
+
+  - name: raspi-01
+    type: raspberry_pi_4
+    os: raspberry_pi_os
+    role: sensor_hub
+    vpn_ip: x
+    ssh_user: demo
