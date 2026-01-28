@@ -34,3 +34,16 @@ demo/runtime/
 demo/config/*.json
 demo/config/tokens/
 demo/runtime/
+
+# Rust
+rust/target/
+**/target/
+
+# Windows build artifacts (defensive)
+*.exe
+*.pdb
+*.dll
+*.lib
+*.exp
+*.d
+
