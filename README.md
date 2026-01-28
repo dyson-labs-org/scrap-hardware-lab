@@ -77,3 +77,103 @@ This topology is intentional and permanent.
 
 ```powershell
 .\scripts\healthcheck.ps1
+
+## Rust demo (no Python)
+
+This demo uses **Rust-only JSON formats** for tokens and UDP messages. These
+formats are stable for the demo but **not compatible** with the Python TLV
+implementation.
+
+### Build (WSL2 / Linux)
+
+```bash
+cd rust
+cargo build --release
+```
+
+### Token JSON format (Rust-only)
+
+```json
+{
+  "version": 1,
+  "token_id": "32hex",
+  "subject": "hex string",
+  "audience": "JETSON-A",
+  "capability": "telemetry.read",
+  "issued_at": 1710000000,
+  "expires_at": 1710000600,
+  "signature": "mock"
+}
+```
+
+### UDP message JSON format (Rust-only)
+
+Commander -> Executor:
+```json
+{
+  "version": 1,
+  "type": "task_request",
+  "task_id": "32hex",
+  "requested_capability": "telemetry.read",
+  "token": { "...": "token json" },
+  "commander_pubkey": "hex string",
+  "commander_signature": "mock"
+}
+```
+
+Executor -> Commander (success):
+```json
+{
+  "version": 1,
+  "type": "task_accepted",
+  "task_id": "32hex",
+  "payment_hash": "64hex"
+}
+```
+
+Executor -> Commander (proof):
+```json
+{
+  "version": 1,
+  "type": "proof",
+  "task_id": "32hex",
+  "proof_hash": "64hex"
+}
+```
+
+Executor -> Commander (reject):
+```json
+{
+  "version": 1,
+  "type": "task_rejected",
+  "task_id": "32hex",
+  "details": ["..."],
+  "notes": ["signature verification skipped (mock mode)"]
+}
+```
+
+### Deterministic hashes
+
+- `payment_hash = sha256(task_id || token_id || "payment")`
+- `proof_hash   = sha256(task_id || payment_hash || "proof")`
+
+### Smoke run (Laptop/WSL2 -> Jetson)
+
+```bash
+./scripts/rust_smoke.sh
+```
+
+This script will:
+- Build Rust binaries
+- Copy `scrap-executor` + config JSON to Jetson
+- Start executor on Jetson
+- Issue a token with `scrap-operator`
+- Send a request with `scrap-commander`
+- Pull back `demo/runtime/executor.log`
+
+### Start executor on Jetson (manual)
+
+```bash
+./scripts/start_rust_executor.sh
+```
+
