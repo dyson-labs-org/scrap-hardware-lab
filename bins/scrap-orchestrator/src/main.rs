@@ -2,7 +2,7 @@ use clap::Parser;
 use scrap_core_lite::{
     build_task_request, decode_envelope, encode_envelope, Payload, TaskRequest, Token,
 };
-use scrap_linux_udp::{hex_encode, load_routes};
+use scrap_linux_udp::{hex_encode, hex_preview, load_routes};
 use serde::Deserialize;
 use serde_json::json;
 use sha2::{Digest, Sha256};
@@ -126,6 +126,13 @@ fn main() {
 
     let mut buf = Vec::new();
     encode_envelope(&env, &mut buf).expect("encode failed");
+
+    println!("{}", json!({
+        "ts": unix_ts(),
+        "event": "task_request_encoded",
+        "len": buf.len(),
+        "preview": hex_preview(&buf, 32)
+    }));
 
     let bind_addr = format!("{}:{}", args.bind, args.port);
     let socket = UdpSocket::bind(&bind_addr).expect("bind failed");

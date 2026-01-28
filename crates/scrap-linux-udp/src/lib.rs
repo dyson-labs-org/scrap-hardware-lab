@@ -274,7 +274,15 @@ pub fn run_node(config: NodeConfig) -> Result<(), String> {
         let env = match decode_envelope(&buf[..len]) {
             Ok(env) => env,
             Err(err) => {
-                log_json("invalid_cbor", serde_json::json!({"error": format!("{err}"), "source": addr.to_string()}));
+                log_json(
+                    "invalid_cbor",
+                    serde_json::json!({
+                        "error": format!("{err}"),
+                        "source": addr.to_string(),
+                        "len": len,
+                        "preview": hex_preview(&buf[..len], 32)
+                    }),
+                );
                 continue;
             }
         };
@@ -388,6 +396,18 @@ pub fn hex_encode(bytes: &[u8]) -> String {
     let mut out = String::with_capacity(bytes.len() * 2);
     for b in bytes {
         out.push_str(&format!("{:02x}", b));
+    }
+    out
+}
+
+pub fn hex_preview(bytes: &[u8], max: usize) -> String {
+    let take = core::cmp::min(bytes.len(), max);
+    let mut out = String::with_capacity(take * 2);
+    for b in &bytes[..take] {
+        out.push_str(&format!("{:02x}", b));
+    }
+    if bytes.len() > max {
+        out.push_str("..");
     }
     out
 }

@@ -1,0 +1,9 @@
+{
+  "audience": "JETSON-A",
+  "capability": "telemetry.read",
+  "expires_at": 1769618840,
+  "issued_at": 1769618240,
+  "signature_mocked": true,
+  "subject": "22",
+  "token_id": "aabbccddeeff00112233445566778899"
+}
