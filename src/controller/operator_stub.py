@@ -36,32 +36,6 @@ def save_json(path: str, data: Dict[str, str]) -> None:
         json.dump(data, handle, indent=2, sort_keys=True)
 
 
-def generate_keys(path: str) -> None:
-    try:
-        import coincurve  # type: ignore
-    except Exception as exc:
-        raise SystemExit("coincurve is required to generate keys") from exc
-
-    def gen_pair() -> Dict[str, str]:
-        priv = coincurve.PrivateKey()
-        pub = priv.public_key.format(compressed=True)
-        return {"priv": priv.secret.hex(), "pub": pub.hex()}
-
-    operator = gen_pair()
-    commander = gen_pair()
-    executor = gen_pair()
-
-    keys = {
-        "operator_privkey": operator["priv"],
-        "operator_pubkey": operator["pub"],
-        "commander_privkey": commander["priv"],
-        "commander_pubkey": commander["pub"],
-        "executor_privkey": executor["priv"],
-        "executor_pubkey": executor["pub"],
-    }
-    save_json(path, keys)
-
-
 def issue_token(args: argparse.Namespace) -> None:
     keys = load_keys(args.keys)
     operator_pubkey = hex_to_bytes(keys["operator_pubkey"])
@@ -99,7 +73,7 @@ def issue_token(args: argparse.Namespace) -> None:
         if args.allow_mock_signature:
             signature = b"\x00" * 64
         else:
-            raise SystemExit("signature unavailable (install coincurve or allow mock)")
+            raise SystemExit("signature unavailable in mock-only mode")
 
     token = body + encode_record(TLV_SIGNATURE, signature)
 
@@ -138,9 +112,6 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="SCRAP operator stub (demo)")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    gen = sub.add_parser("gen-keys", help="generate demo keys (requires coincurve)")
-    gen.add_argument("--out", required=True)
-
     issue = sub.add_parser("issue-token", help="issue capability token")
     issue.add_argument("--keys", required=True)
     issue.add_argument("--out", required=True)
@@ -159,9 +130,7 @@ def main() -> None:
     revoke.add_argument("--token-id", required=True)
 
     args = parser.parse_args()
-    if args.cmd == "gen-keys":
-        generate_keys(args.out)
-    elif args.cmd == "issue-token":
+    if args.cmd == "issue-token":
         issue_token(args)
     elif args.cmd == "revoke":
         revoke_token(args)
