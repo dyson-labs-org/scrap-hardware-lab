@@ -1,0 +1,8 @@
+{
+  "operator_privkey": "<32-byte-hex>",
+  "operator_pubkey": "<33-byte-compressed-hex>",
+  "commander_privkey": "<32-byte-hex>",
+  "commander_pubkey": "<33-byte-compressed-hex>",
+  "executor_privkey": "<32-byte-hex>",
+  "executor_pubkey": "<33-byte-compressed-hex>"
+}

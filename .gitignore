@@ -20,3 +20,13 @@ Thumbs.db
 
 # VS Code workspace files
 *.code-workspace
+
+# ---- demo local state (DO NOT COMMIT) ----
+demo/config/keys.json
+demo/config/policy.json
+demo/config/revoked.json
+demo/config/tokens/
+demo/runtime/
+
+# If you ever emit binary artifacts elsewhere
+*.bin
