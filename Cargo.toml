@@ -1,0 +1,9 @@
+[workspace]
+resolver = "2"
+members = [
+  "crates/scrap-core-lite",
+  "crates/scrap-edge",
+  "crates/scrap-linux-udp",
+  "bins/scrap-node",
+  "bins/scrap-orchestrator"
+]

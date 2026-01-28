@@ -177,3 +177,175 @@ This script will:
 ./scripts/start_rust_executor.sh
 ```
 
+
+## SCRAP-lite no_std demo (CBOR)
+
+This tiered workspace provides a **no_std-ready** edge runtime with a thin Linux
+UDP shim. The core protocol logic lives in `crates/scrap-core-lite` and
+`crates/scrap-edge` and **does not depend on std**. The orchestrator and Linux
+shim are std-only.
+
+### Workspace layout
+
+```
+crates/
+  scrap-core-lite   # no_std + alloc, CBOR envelope + types
+  scrap-edge        # no_std + alloc, routing + token verification
+  scrap-linux-udp   # std, UDP IO + route loading + replay cache
+bins/
+  scrap-node         # std thin wrapper for Jetson/BBB
+  scrap-orchestrator # std orchestrator on laptop
+```
+
+### CBOR message envelope (map keys)
+
+Envelope (CBOR map):
+- `0` version
+- `1` msg_type
+- `2` trace_id (bytes, 16)
+- `3` src (text)
+- `4` dst (text)
+- `5` hop_limit (u8)
+- `6` payload (map)
+
+Payload types:
+- TaskRequest (`msg_type=1`):
+  - `0` token (map)
+  - `1` command (text)
+  - `2` args (text)
+  - `3` reply_to (text)
+  - `4` commander_pubkey (text)
+- TaskResult (`msg_type=2`):
+  - `0` status (u8)
+  - `1` output_digest (bytes)
+  - `2` telemetry (map)
+- TaskRejected (`msg_type=3`):
+  - `0` reason (text)
+  - `1` details (array text)
+
+Token map:
+- `0` token_id (bytes, 16)
+- `1` subject (text)
+- `2` audience (text)
+- `3` capability (text)
+- `4` issued_at (u64)
+- `5` expires_at (u64)
+
+Telemetry map:
+- `0` duration_ms (u32)
+- `1` node_id (text)
+
+### Route table format
+
+`inventory/routes.json` (static next-hop map):
+
+```json
+{
+  "nodes": {
+    "ORCH": {
+      "routes": {
+        "JETSON-A": "192.168.50.10:7227",
+        "BBB-01": "192.168.50.10:7227"
+      }
+    },
+    "JETSON-A": {
+      "routes": {
+        "BBB-01": "192.168.50.31:7227",
+        "ORCH": "192.168.50.1:7331"
+      }
+    },
+    "BBB-01": {
+      "routes": {
+        "ORCH": "192.168.50.1:7331"
+      }
+    }
+  }
+}
+```
+
+### Build (WSL2 / Linux)
+
+```bash
+# full workspace
+cargo build --release
+
+# prove no_std for core
+cargo build -p scrap-core-lite --target thumbv7em-none-eabi
+cargo build -p scrap-edge --target thumbv7em-none-eabi
+```
+
+### Cross-compile (from WSL2)
+
+```bash
+rustup target add aarch64-unknown-linux-gnu armv7-unknown-linux-gnueabihf
+
+cargo build -p scrap-node --release --target aarch64-unknown-linux-gnu
+cargo build -p scrap-node --release --target armv7-unknown-linux-gnueabihf
+```
+
+> You may need `aarch64-linux-gnu-gcc` and `arm-linux-gnueabihf-gcc` on WSL2
+> for linking.
+
+### Run scrap-node (Jetson / BBB)
+
+```bash
+./scrap-node \
+  --node-id JETSON-A \
+  --bind 0.0.0.0 \
+  --port 7227 \
+  --routes inventory/routes.json \
+  --replay-cache demo/runtime/replay_cache.json \
+  --revoked demo/config/revoked.json \
+  --commander-pubkey <hex> \
+  --allow-mock-signatures
+```
+
+### Run orchestrator (Laptop)
+
+```bash
+./scrap-orchestrator \
+  --node-id ORCH \
+  --bind 0.0.0.0 \
+  --port 7331 \
+  --routes inventory/routes.json \
+  --target BBB-01 \
+  --keys demo/config/keys.json \
+  --command demo.hash \
+  --args 123 \
+  --timeout 10
+```
+
+### Smoke test
+
+```bash
+./tests/smoke/run.sh
+```
+
+### Keys file (dev)
+
+Create `demo/config/keys.json` from the template and set `commander_pubkey`:
+
+```json
+{
+  "commander_pubkey": "DEV-COMMANDER"
+}
+```
+
+Other fields in the template are ignored by the no_std demo.
+
+### Running as a service
+
+See `deploy/systemd/` for unit files and install steps for Jetson and BBB.
+Copy the unit + config, then enable/start:
+
+```bash
+sudo install -m 0755 scrap-node /usr/local/bin/scrap-node
+sudo install -m 0644 deploy/systemd/scrap-node.service /etc/systemd/system/scrap-node.service
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now scrap-node
+sudo systemctl status scrap-node --no-pager
+```
+## Running as a service (systemd)
+
+See `deploy/systemd/README.md` for installation instructions and an example `/etc/scrap/node.json`.

@@ -1,0 +1,10 @@
+[package]
+name = "scrap-core-lite"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+minicbor = { version = "0.20", default-features = false, features = ["alloc"] }
+
+[features]
+default = []

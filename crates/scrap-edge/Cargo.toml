@@ -1,0 +1,10 @@
+[package]
+name = "scrap-edge"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+scrap-core-lite = { path = "../scrap-core-lite" }
+
+[features]
+default = []

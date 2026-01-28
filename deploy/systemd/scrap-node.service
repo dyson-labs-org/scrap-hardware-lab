@@ -1,0 +1,14 @@
+[Unit]
+Description=SCRAP node (Rust)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/scrap-node --config /etc/scrap/node.json
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

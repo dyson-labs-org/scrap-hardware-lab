@@ -1,7 +1,7 @@
-# Secrets
+# Secrets (DO NOT COMMIT)
 *.key
 *.pem
-*.env
+.env
 secrets.yaml
 inventory/secrets.yaml
 
@@ -30,13 +30,8 @@ demo/runtime/
 
 # If you ever emit binary artifacts elsewhere
 *.bin
-# Demo config/runtime (local only)
-demo/config/*.json
-demo/config/tokens/
-demo/runtime/
 
-# Rust
-rust/target/
+# Rust build artifacts
 **/target/
 
 # Windows build artifacts (defensive)
@@ -46,4 +41,3 @@ rust/target/
 *.lib
 *.exp
 *.d
-
