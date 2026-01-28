@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import time
 from typing import Any, Dict, Optional
 
@@ -39,6 +40,22 @@ def read_revocations(path: Optional[str]) -> set[str]:
     except Exception:
         return set()
 
+def ensure_runtime_paths(node_id: str) -> tuple[str, str, str]:
+    runtime_dir = os.path.join("demo", "runtime", node_id)
+    os.makedirs(runtime_dir, exist_ok=True)
+    replay_cache_path = os.path.join(runtime_dir, "replay_cache.json")
+    revoked_path = os.path.join(runtime_dir, "revoked.json")
+
+    if not os.path.exists(replay_cache_path):
+        with open(replay_cache_path, "w", encoding="utf-8") as handle:
+            json.dump({}, handle, indent=2, sort_keys=True)
+
+    if not os.path.exists(revoked_path):
+        with open(revoked_path, "w", encoding="utf-8") as handle:
+            json.dump([], handle, indent=2, sort_keys=True)
+
+    return runtime_dir, replay_cache_path, revoked_path
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="SCRAP executor (demo)")
@@ -62,15 +79,18 @@ def main() -> None:
 
     allow_mock = bool(policy.get("allow_mock_signatures", False) or args.allow_mock_signatures)
     require_commander_sig = bool(policy.get("require_commander_sig", False))
-    revocation_list_path = policy.get("revocation_list_path")
-
-    replay_cache = None
-    if policy.get("replay_cache_path"):
-        replay_cache = ReplayCache(policy["replay_cache_path"])
+    runtime_dir, replay_cache_path, revocation_list_path = ensure_runtime_paths(node_id)
+    replay_cache = ReplayCache(replay_cache_path)
 
     execute_delay = int(policy.get("execute_delay_sec", 1))
     socket = bind_socket(args.bind, args.port)
-    log("executor_started", bind=args.bind, port=args.port, node_id=node_id)
+    log(
+        "executor_started",
+        bind=args.bind,
+        port=args.port,
+        node_id=node_id,
+        runtime_dir=runtime_dir,
+    )
 
     engine = load_schnorr_engine()
 
@@ -109,6 +129,14 @@ def main() -> None:
                 token = CapabilityToken.from_bytes(b64decode(token_b64))
             except Exception as exc:
                 issues.append(f"token parse error: {exc}")
+        token_id_hex = token.token_id.hex() if token is not None else None
+
+        log(
+            "task_received",
+            task_id=task_id,
+            token_id=token_id_hex,
+            commander_pubkey=commander_pubkey_hex,
+        )
 
         if token is not None:
             ok, token_issues, token_notes = token.verify(
@@ -153,6 +181,14 @@ def main() -> None:
                     issues.append("commander signature invalid")
 
         if issues:
+            log(
+                "validation_result",
+                task_id=task_id,
+                token_id=token_id_hex,
+                status="rejected",
+                reasons=issues,
+                notes=notes,
+            )
             reject = with_header(
                 MSG_TASK_REJECT,
                 "task_reject",
@@ -167,6 +203,14 @@ def main() -> None:
             send_message(socket, addr[0], addr[1], reject)
             log("task_rejected", task_id=task_id, issues=issues, notes=notes)
             continue
+        log(
+            "validation_result",
+            task_id=task_id,
+            token_id=token_id_hex,
+            status="accepted",
+            reasons=[],
+            notes=notes,
+        )
 
         # Accept the task and issue a payment hash.
         preimage = sha256(f"preimage:{task_id}:{time.time()}".encode("utf-8"))
@@ -221,7 +265,12 @@ def main() -> None:
             },
         )
         send_message(socket, addr[0], addr[1], proof)
-        log("proof_sent", task_id=task_id, proof_hash=proof_hash.hex())
+        log(
+            "proof_sent",
+            task_id=task_id,
+            token_id=token_id_hex,
+            proof_hash=proof_hash.hex(),
+        )
 
 
 if __name__ == "__main__":
