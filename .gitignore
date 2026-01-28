@@ -30,3 +30,7 @@ demo/runtime/
 
 # If you ever emit binary artifacts elsewhere
 *.bin
+# Demo config/runtime (local only)
+demo/config/*.json
+demo/config/tokens/
+demo/runtime/

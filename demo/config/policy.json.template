@@ -2,7 +2,7 @@
   "node_id": "JETSON-A",
   "allow_mock_signatures": true,
   "require_commander_sig": false,
-  "replay_cache_path": "demo/runtime/replay_cache.json",
-  "revocation_list_path": "demo/config/revoked.json",
+  "replay_cache_path": "demo/runtime/JETSON-A/replay_cache.json",
+  "revocation_list_path": "demo/runtime/JETSON-A/revoked.json",
   "execute_delay_sec": 2
 }
