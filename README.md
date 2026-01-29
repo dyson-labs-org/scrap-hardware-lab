@@ -77,6 +77,7 @@ This topology is intentional and permanent.
 
 ```powershell
 .\scripts\healthcheck.ps1
+```
 
 ## Rust demo (no Python)
 
@@ -90,6 +91,14 @@ implementation.
 cd rust
 cargo build --release
 ```
+
+### Spec mode audience migration
+
+Spec mode now treats `token.audience` as the executor's public key (compressed hex or
+32-byte x-only). A key-id derived from the executor pubkey (sha256 of the x-only pubkey)
+is also accepted for audience matching. The executor reads `executor_pubkey` from
+`demo/config/policy.json` (node_id is now logging/routing only). Re-issue spec tokens
+with `--audience <executor_pubkey>` or the derived key-id.
 
 ### Token JSON format (Rust-only)
 
@@ -170,6 +179,29 @@ This script will:
 - Issue a token with `scrap-operator`
 - Send a request with `scrap-commander`
 - Pull back `demo/runtime/executor.log`
+
+### UDP transport debug (echo / ping)
+
+Use this to prove raw UDP round-trip between Jetson and BBB-02 without SCRAP parsing.
+
+On BBB-02 (echo server):
+```bash
+./rust/target/release/scrap-executor \
+  --bind 0.0.0.0 --port 7227 \
+  --policy demo/config/policy.json \
+  --keys demo/config/keys.json \
+  --allow-mock-signatures \
+  --debug-echo
+```
+
+On Jetson (ping client):
+```bash
+./rust/target/release/scrap-commander \
+  --target-host 192.168.50.32 --target-port 7227 \
+  --ping --timeout 5
+```
+
+If you need a fixed reply port (firewall rules), add `--bind-port 7331` on the commander.
 
 ### Start executor on Jetson (manual)
 
