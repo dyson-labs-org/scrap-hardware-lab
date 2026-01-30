@@ -3,7 +3,7 @@ use scrap_protocol::{
     bytes_to_hex, derive_payment_hash, derive_preimage, hex_to_bytes, keypair_from_secret,
     normalize_pubkey, pubkey_from_secret, sign_message_hash, MessageCodec, SettlementState,
     SpecMessage, SpecMessageCodec, SpecPaymentClaim, SpecProofOfExecution, SpecTaskAccept,
-    SpecTaskReject, SpecTokenCodec, SpecVerifier, TokenCodec, Verifier,
+    SpecTaskReject, SpecTaskRequest,  SpecTokenCodec, SpecVerifier, TokenCodec, Verifier,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -73,7 +73,7 @@ struct Token {
     signature: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 struct TaskRequest {
     version: u8,
     #[serde(rename = "type")]
@@ -87,7 +87,7 @@ struct TaskRequest {
     commander_signature: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 struct PaymentTerms {
     max_amount_sats: u64,
     timeout_blocks: u32,
