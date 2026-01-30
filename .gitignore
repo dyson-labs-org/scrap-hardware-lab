@@ -41,3 +41,7 @@ demo/runtime/
 *.lib
 *.exp
 *.d
+
+# Local-only
+/demo/config/_local_backup/
+/rust/.cargo/
