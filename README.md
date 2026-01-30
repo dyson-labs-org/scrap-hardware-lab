@@ -416,7 +416,7 @@ devices.
 - [ ] Map BTCPay events → SCRAP `SettlementState`
 - [ ] Demo flow: task request → payment → execution → proof → settlement
 - [ ] Document trust assumptions (online operator, offline executors)
-
+- [X] Added outbound reverse SSH tunnel to allow external access to lab services (prerequisite for BTCPay integration).
 ---
 
 ### 🔌 BCF Modules (Hardware Attestation)
@@ -471,3 +471,4 @@ devices.
   - What is real
   - What is mocked
   - What is intentionally out of scope
+
