@@ -4,7 +4,7 @@ import os
 import time
 from typing import Any, Dict, Optional
 
-from ..common.crypto import TAG_PROOF, load_schnorr_engine, sha256, tagged_hash
+from ..common.crypto import load_schnorr_engine, sha256
 from ..common.messages import (
     MSG_PROOF,
     MSG_TASK_ACCEPT,
@@ -212,9 +212,9 @@ def main() -> None:
             notes=notes,
         )
 
-        # Accept the task and issue a payment hash.
-        preimage = sha256(f"preimage:{task_id}:{time.time()}".encode("utf-8"))
-        payment_hash = sha256(preimage)
+        # Accept the task and issue a deterministic payment hash.
+        payment_msg = f"{task_id}{token_id_hex}payment".encode("utf-8")
+        payment_hash = sha256(payment_msg)
         accept = with_header(
             MSG_TASK_ACCEPT,
             "task_accept",
@@ -249,8 +249,8 @@ def main() -> None:
         }
         output_hash = sha256(canonical_json(output_summary))
         proof_ts = int(time.time())
-        proof_msg = token.token_id + payment_hash + output_hash + proof_ts.to_bytes(4, "big")
-        proof_hash = tagged_hash(TAG_PROOF, proof_msg)
+        proof_msg = f"{task_id}{payment_hash.hex()}proof".encode("utf-8")
+        proof_hash = sha256(proof_msg)
 
         proof = with_header(
             MSG_PROOF,

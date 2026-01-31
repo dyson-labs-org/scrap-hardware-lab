@@ -155,13 +155,21 @@ fn to_hex(bytes: &[u8]) -> String {
     out
 }
 
+fn sha256_hex(parts: &[&str]) -> String {
+    let mut hasher = Sha256::new();
+    for part in parts {
+        hasher.update(part.as_bytes());
+    }
+    to_hex(&hasher.finalize())
+}
+
 fn derive_demo_correlation_id(task_id: &str, token_id: &str) -> String {
     let seed = format!("{}:{}", task_id, token_id);
     to_hex(&sha256_bytes(seed.as_bytes()))
 }
 
-fn derive_demo_preimage(correlation_id: &str) -> [u8; 32] {
-    sha256_bytes(correlation_id.as_bytes())
+fn derive_demo_payment_hash(task_id: &str, token_id: &str) -> String {
+    sha256_hex(&[task_id, token_id, "payment"])
 }
 
 fn main() {
@@ -273,7 +281,7 @@ fn main() {
             let token_path = args.token.as_ref().expect("token required");
             let token_raw = fs::read_to_string(token_path).expect("token read failed");
             let token: Token = serde_json::from_str(&token_raw).expect("token parse failed");
-
+            let token_id = token.token_id.clone();
             let keys_path = args.keys.as_ref().expect("keys required");
             let keys_raw = fs::read_to_string(keys_path).expect("keys read failed");
             let keys_val: serde_json::Value =
@@ -290,8 +298,7 @@ fn main() {
                 max_amount_sats: args.max_amount_sats,
                 timeout_blocks: args.timeout_blocks,
             };
-            let preimage = derive_demo_preimage(&correlation_id);
-            let payment_hash = to_hex(&sha256_bytes(&preimage));
+            let payment_hash = derive_demo_payment_hash(&task_id, &token.token_id);
 
             if args.allow_mock_signatures {
                 let log = json!({
@@ -458,8 +465,8 @@ fn main() {
                             println!("{}", log);
                             continue;
                         }
-                        let derived_hash = to_hex(&sha256_bytes(&hex_to_bytes(&claim.preimage).unwrap_or_default()));
-                        if derived_hash != claim.payment_hash || claim.payment_hash != payment_hash {
+                        let expected_hash = derive_demo_payment_hash(&task_id, &token_id);
+                        if claim.payment_hash != expected_hash || claim.payment_hash != payment_hash {
                             let log = json!({
                                 "ts": unix_ts(),
                                 "event": "payment_claim_hash_mismatch"

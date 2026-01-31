@@ -201,8 +201,8 @@ fn derive_demo_correlation_id(task_id: &str, token_id: &str) -> String {
     to_hex(&sha256_bytes(seed.as_bytes()))
 }
 
-fn derive_demo_preimage(correlation_id: &str) -> [u8; 32] {
-    sha256_bytes(correlation_id.as_bytes())
+fn derive_demo_payment_hash(task_id: &str, token_id: &str) -> String {
+    sha256_hex(&[task_id, token_id, "payment"])
 }
 
 fn read_json_file<T: for<'de> Deserialize<'de>>(path: &str) -> Option<T> {
@@ -539,8 +539,8 @@ fn main() {
                         continue;
                     }
 
-                    let preimage = derive_demo_preimage(&request.correlation_id);
-                    let payment_hash = to_hex(&sha256_bytes(&preimage));
+                    let payment_hash =
+                        derive_demo_payment_hash(&request.task_id, &request.token.token_id);
                     if demo_states.contains_key(&request.task_id) {
                         let log = json!({
                             "ts": unix_ts(),
@@ -717,13 +717,13 @@ fn main() {
                     });
                     println!("{}", log);
 
-                    let preimage = derive_demo_preimage(&state.correlation_id);
+                    let preimage = state.payment_hash.clone();
                     let claim = PaymentClaim {
                         msg_type: "payment_claim".to_string(),
                         task_id: lock.task_id.clone(),
                         correlation_id: state.correlation_id.clone(),
                         payment_hash: state.payment_hash.clone(),
-                        preimage: to_hex(&preimage),
+                        preimage,
                         timestamp: unix_ts(),
                     };
                     if let Ok(payload) = serde_json::to_vec(&claim) {

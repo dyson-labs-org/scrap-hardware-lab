@@ -26,6 +26,8 @@ demo/config/keys.json
 demo/config/policy.json
 demo/config/revoked.json
 demo/config/tokens/
+demo/config/btcpay.json
+demo/config/btcpay.env
 demo/runtime/
 
 # If you ever emit binary artifacts elsewhere

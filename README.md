@@ -166,6 +166,42 @@ Executor -> Commander (reject):
 - `payment_hash = sha256(task_id || token_id || "payment")`
 - `proof_hash   = sha256(task_id || payment_hash || "proof")`
 
+### Payments & Settlement (BTCPay demo)
+
+**Flow boundaries**
+- Operator-side (online): runs the settlement bridge, holds BTCPay credentials, creates invoices, and decides when to release execution.
+- Executor-side (offline/limited): receives `task_request`, waits for `payment_lock`, and never talks to BTCPay.
+  - The pay-gated demo uses the Rust JSON UDP path (task_request + payment_lock).
+
+**Lifecycle mapping (Requested -> LockedAcked -> Claimed)**
+- Requested: BTCPay invoice created (task request issued).
+- LockedAcked: invoice status is paid enough for the demo (rule: `Paid` is sufficient).
+- Claimed: proof received and verified against the deterministic `proof_hash`.
+
+**Demo flow**
+1) Task request sent to executor (no execution yet).
+2) Operator prints invoice URL.
+3) Customer pays.
+4) Operator sends `payment_lock` after BTCPay is paid.
+5) Executor executes and sends proof.
+6) Operator verifies proof, records claim, and prints `DEMO SUCCESS`.
+
+**Trust assumptions**
+- Operator is online and trusted to map BTCPay status to the lock.
+- Executors are offline/limited and never hold BTCPay credentials.
+
+**CLI examples**
+- Fake (offline dev):
+  `./scripts/demo_pay_gate.sh --fake --usd 5 --target-host 127.0.0.1`
+- Real (VPS demo):
+  `./scripts/demo_pay_gate.sh --real --usd 25 --btcpay-url https://btcpay.example --btcpay-store-id STORE_ID --btcpay-api-key API_KEY --target-host 192.168.50.10`
+- Real config can also be provided via env (`BTCPAY_URL`, `BTCPAY_STORE_ID`, `BTCPAY_API_KEY`) or `--btcpay-config demo/config/btcpay.json` (gitignored).
+- Operator settlement state persists locally in `demo/runtime/settlement.json`.
+
+**What this demo proves**
+- Execution is gated on real payment confirmation.
+- Proof is cryptographically bound to the paid task via deterministic hashes.
+
 ### Smoke run (Laptop/WSL2 -> Jetson)
 
 ```bash

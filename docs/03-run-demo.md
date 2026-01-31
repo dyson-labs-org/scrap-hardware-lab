@@ -26,5 +26,6 @@ per spec.
 ## Notes
 
 - Signatures are mocked (no external crypto dependencies).
-- The payment layer is simulated (payment_hash is real; settlement is not).
+- The smoke run uses simulated payment (payment_hash is real; settlement is not).
+- The pay-gated demo uses BTCPay via `scripts/demo_pay_gate.sh` and persists state to `demo/runtime/settlement.json`.
 - Logs are written under demo/runtime/<node_id>/ on the laptop.

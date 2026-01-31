@@ -41,5 +41,5 @@ This plan applies to the switch-era lab (192.168.50.0/24) described in
 ## Notes
 
 - Signatures are mocked (no external crypto dependencies).
-- Payment is simulated (payment_hash is real; settlement is not).
+- Default smoke run uses simulated payment; pay-gated demo uses BTCPay via `scripts/demo_pay_gate.sh`.
 - All runtime data is stored under `demo/runtime/<node_id>/` on the laptop.
