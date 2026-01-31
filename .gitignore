@@ -47,3 +47,6 @@ demo/runtime/
 # Local-only
 /demo/config/_local_backup/
 /rust/.cargo/
+
+# Local spec references (never commit)
+_ref/
