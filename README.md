@@ -29,26 +29,38 @@ ssh demo@170.75.161.148 enter_lab
 ```
 ---
 
-### Step 2: Run an authorized schenario
+### Step 2: Start a demo session (creates an invoice)
+
+```bash
+export DEMO_AMOUNT=5
+export DEMO_CURRENCY=USD   # optional
+
+./demo/run_demo.sh
+```
+---
+Once settled, the session become **READY**
+
+### Step 3: Run an authorized execution
 
 ```bash
 demo/scenarios/01_authorized.sh
 ```
 ---
 
-### Step 3: Try a failure case
+### Step 4: Try a failure case
 
 ```bash
 demo/scenarios/02_unauthorized.sh
 ```
 ---
 
-### Step 4: Observer the results
+### Step 5: Observe the results
 
 ```bash
-ls demo/runtime/EXECUTOR
-tail -n 50 demo/runtime/EXECUTOR/scenario_01_authorized.jsonl
-tail -n 50 demo/runtime/EXECUTOR/scenario_02_unauthorized.jsonl
+ls demo/runtime/JETSON-A
+
+tail -n 50 demo/runtime/JETSON-A/scenario_01_authorized.jsonl
+tail -n 50 demo/runtime/JETSON-A/scenario_02_unauthorized.jsonl
 ```
 ---
 
@@ -551,6 +563,7 @@ devices.
   - What is real
   - What is mocked
   - What is intentionally out of scope
+
 
 
 
