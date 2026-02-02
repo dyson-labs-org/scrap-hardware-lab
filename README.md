@@ -25,17 +25,19 @@ This is a **correctness and security semantics demo**, not a production deployme
 ### Step 1: SSH into the demo VPS
 
 ```bash
-ssh demo@170.75.161.148 enter_lab
+ssh demo@170.75.161.148
+```
+---
+Once connected, enter the demo environment
+```bash
+
 ```
 ---
 
-### Step 2: Start a demo session (creates an invoice)
+### Step 2: Once connected, enter the demo environment (creates an invoice)
 
 ```bash
-export DEMO_AMOUNT=5
-export DEMO_CURRENCY=USD   # optional
-
-./demo/run_demo.sh
+enter_lab
 ```
 ---
 Once settled, the session become **READY**
@@ -563,6 +565,7 @@ devices.
   - What is real
   - What is mocked
   - What is intentionally out of scope
+
 
 
 
