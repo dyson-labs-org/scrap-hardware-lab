@@ -28,11 +28,6 @@ This is a **correctness and security semantics demo**, not a production deployme
 ssh demo@170.75.161.148
 ```
 ---
-Once connected, enter the demo environment
-```bash
-
-```
----
 
 ### Step 2: Once connected, enter the demo environment (creates an invoice)
 
@@ -565,6 +560,7 @@ devices.
   - What is real
   - What is mocked
   - What is intentionally out of scope
+
 
 
 
