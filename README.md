@@ -27,7 +27,7 @@ This is a **correctness and security semantics demo**, not a production deployme
 ### Step 1: SSH into the demo VPS
 
 ```bash
-ssh demo@<DEMO_VPS_HOST>
+ssh demo@170.75.161.148 enter_lab
 ---
 
 ## Topology: Switch-First (Authoritative)
@@ -529,6 +529,7 @@ devices.
   - What is real
   - What is mocked
   - What is intentionally out of scope
+
 
 
 
