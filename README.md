@@ -22,13 +22,13 @@ You do **not** need hardware, keys, or a local build.
 
 This is a **correctness and security semantics demo**, not a production deployment.
 
----
-
 ### Step 1: SSH into the demo VPS
 
 ```bash
 ssh demo@170.75.161.148 enter_lab
 ---
+
+**### Step 2: Run an authorized scenario**
 
 ## Topology: Switch-First (Authoritative)
 
@@ -529,6 +529,7 @@ devices.
   - What is real
   - What is mocked
   - What is intentionally out of scope
+
 
 
 
