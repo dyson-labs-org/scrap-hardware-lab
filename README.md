@@ -7,6 +7,29 @@ The lab is intentionally designed around **boring, deterministic infrastructure*
 protocol behavior is never confused with transport issues.
 
 ---
+## Quickstart: Run the Live SCRAP Demo (2–3 minutes)
+
+This demo lets you trigger real SCRAP authorization flows against **real hardware executors**
+from a shared demo environment.
+
+You do **not** need hardware, keys, or a local build.
+
+### What you are doing
+
+- You SSH into a demo VPS operated by Dyson Labs
+- You run preconfigured demo scenarios as a **demo commander**
+- Those scenarios authorize (or reject) execution on real SBC hardware
+- Results are observable via emitted JSON event logs
+
+This is a **correctness and security semantics demo**, not a production deployment.
+
+---
+
+### Step 1: SSH into the demo VPS
+
+```bash
+ssh demo@<DEMO_VPS_HOST>
+---
 
 ## Topology: Switch-First (Authoritative)
 
@@ -507,4 +530,5 @@ devices.
   - What is real
   - What is mocked
   - What is intentionally out of scope
+
 
