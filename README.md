@@ -28,7 +28,17 @@ This is a **correctness and security semantics demo**, not a production deployme
 ssh demo@170.75.161.148 enter_lab
 ---
 
-**### Step 2: Run an authorized scenario**
+### Step 2: Run an authorized schenario
+
+```bash
+demo/scenarios/01_authorized.sh
+---
+
+### Step 3: Try a failure case
+
+```bash
+demo/scenarios/02_unauthorized.sh
+---
 
 ## Topology: Switch-First (Authoritative)
 
@@ -529,6 +539,7 @@ devices.
   - What is real
   - What is mocked
   - What is intentionally out of scope
+
 
 
 
