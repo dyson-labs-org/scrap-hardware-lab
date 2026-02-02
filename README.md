@@ -6,7 +6,6 @@ for the SCRAP (Secure Capability Routing and Authorization Protocol) hardware la
 The lab is intentionally designed around **boring, deterministic infrastructure** so
 protocol behavior is never confused with transport issues.
 
----
 ## Quickstart: Run the Live SCRAP Demo (2–3 minutes)
 
 This demo lets you trigger real SCRAP authorization flows against **real hardware executors**
@@ -530,5 +529,6 @@ devices.
   - What is real
   - What is mocked
   - What is intentionally out of scope
+
 
 
