@@ -42,10 +42,6 @@
 
 ## Known-Good Facts (Current)
 
-### Luna 
-- **User:** `ubuntu`
-- **ip:** `170.75.161.148`
-
 ### Pi-A
 
 - **Hostname:** `pi-a`

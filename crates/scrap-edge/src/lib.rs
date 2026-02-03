@@ -7,7 +7,7 @@ use alloc::vec;
 use alloc::vec::Vec;
 use scrap_core_lite::{
     build_task_rejected, Envelope, Payload, RouteTable, TaskRequest, TaskResult, Token,
-    MAX_ARGS_LEN, MAX_COMMAND_LEN, MAX_NODE_ID_LEN, MAX_PUBKEY_LEN, MSG_TASK_REQUEST,
+    MAX_ARGS_LEN, MAX_COMMAND_LEN, MAX_NODE_ID_LEN, MSG_TASK_REQUEST,
 };
 
 pub const DETAIL_SUBJECT_MISMATCH: &str = "token subject does not match commander_pubkey";
@@ -178,5 +178,5 @@ pub fn validate_node_id(node_id: &str) -> bool {
 }
 
 pub fn validate_token_subject(token: &Token) -> bool {
-    !token.subject.is_empty() && token.subject.len() <= MAX_PUBKEY_LEN
+    !token.subject.is_empty() && token.subject.len() <= MAX_NODE_ID_LEN
 }

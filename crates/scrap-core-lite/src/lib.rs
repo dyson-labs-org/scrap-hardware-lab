@@ -45,7 +45,6 @@ const KEY_TEL_DURATION_MS: u8 = 0;
 const KEY_TEL_NODE_ID: u8 = 1;
 
 pub const MAX_NODE_ID_LEN: usize = 32;
-pub const MAX_PUBKEY_LEN: usize = 128;
 pub const MAX_COMMAND_LEN: usize = 32;
 pub const MAX_ARGS_LEN: usize = 64;
 pub const MAX_REASON_LEN: usize = 64;
@@ -293,7 +292,7 @@ fn decode_task_request(dec: &mut Decoder<'_>) -> Result<TaskRequest, DecodeError
             KEY_COMMAND => command = Some(decode_string(dec, MAX_COMMAND_LEN)?),
             KEY_ARGS => args = Some(decode_string(dec, MAX_ARGS_LEN)?),
             KEY_REPLY_TO => reply_to = Some(decode_string(dec, MAX_NODE_ID_LEN)?),
-            KEY_COMMANDER => commander = Some(decode_string(dec, MAX_PUBKEY_LEN)?),
+            KEY_COMMANDER => commander = Some(decode_string(dec, MAX_NODE_ID_LEN)?),
             _ => dec.skip()?,
         }
     }
@@ -409,7 +408,7 @@ fn decode_token(dec: &mut Decoder<'_>) -> Result<Token, DecodeError> {
         let key = dec.u8()?;
         match key {
             KEY_TOKEN_ID => token_id = Some(decode_bytes(dec, TOKEN_ID_LEN)?),
-            KEY_SUBJECT => subject = Some(decode_string(dec, MAX_PUBKEY_LEN)?),
+            KEY_SUBJECT => subject = Some(decode_string(dec, MAX_NODE_ID_LEN)?),
             KEY_AUDIENCE => audience = Some(decode_string(dec, MAX_NODE_ID_LEN)?),
             KEY_CAPABILITY => capability = Some(decode_string(dec, MAX_COMMAND_LEN)?),
             KEY_ISSUED_AT => issued_at = Some(dec.u64()?),
