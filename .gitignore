@@ -50,3 +50,10 @@ demo/runtime/
 
 # Local spec references (never commit)
 _ref/
+# Local demo runtime / secrets (never commit)
+demo/config/demo.env
+demo/config/tokens/
+demo/config/*.json
+!demo/config/*.template
+demo/demo/
+demo/runtime/
