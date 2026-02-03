@@ -6,59 +6,6 @@ for the SCRAP (Secure Capability Routing and Authorization Protocol) hardware la
 The lab is intentionally designed around **boring, deterministic infrastructure** so
 protocol behavior is never confused with transport issues.
 
-## Quickstart: Run the Live SCRAP Demo (2–3 minutes)
-
-This demo lets you trigger real SCRAP authorization flows against **real hardware executors**
-from a shared demo environment.
-
-You do **not** need hardware, keys, or a local build.
-
-### What you are doing
-
-- You SSH into a demo VPS operated by Dyson Labs
-- You run preconfigured demo scenarios as a **demo commander**
-- Those scenarios authorize (or reject) execution on real SBC hardware
-- Results are observable via emitted JSON event logs
-
-This is a **correctness and security semantics demo**, not a production deployment.
-
-### Step 1: SSH into the demo VPS
-
-```bash
-ssh demo@170.75.161.148
-```
----
-
-### Step 2: Once connected, enter the demo environment (creates an invoice)
-
-```bash
-enter_lab
-```
----
-Once settled, the session become **READY**
-
-### Step 3: Run an authorized execution
-
-```bash
-demo/scenarios/01_authorized.sh
-```
----
-
-### Step 4: Try a failure case
-
-```bash
-demo/scenarios/02_unauthorized.sh
-```
----
-
-### Step 5: Observe the results
-
-```bash
-ls demo/runtime/JETSON-A
-
-tail -n 50 demo/runtime/JETSON-A/scenario_01_authorized.jsonl
-tail -n 50 demo/runtime/JETSON-A/scenario_02_unauthorized.jsonl
-```
 ---
 
 ## Topology: Switch-First (Authoritative)
@@ -560,13 +507,4 @@ devices.
   - What is real
   - What is mocked
   - What is intentionally out of scope
-
-
-
-
-
-
-
-
-
 
